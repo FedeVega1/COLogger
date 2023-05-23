@@ -6,6 +6,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <chrono>
+#include <format>
 
 namespace OutLog
 {
@@ -79,7 +80,9 @@ namespace OutLog
 
 	void OutputLogger::LogMessage(OLoggerLevel logLevel, std::string message)
 	{
-		auto time = std::chrono::zoned_time{ std::chrono::current_zone(), std::chrono::system_clock::now() };
+		// Why the fuck is this generating a memory leak?
+		const auto time = std::chrono::zoned_time{ std::chrono::current_zone(), std::chrono::system_clock::now() }; 
+
 		if (usingConsole) std::cout << ParseLevelToColor(logLevel) << "[" << time.get_local_time() << "] " << ParseLevelToString(logLevel) << ": " << message << "\033[0m" << std::endl;
 		if (usingFile) *pLogFileStream << "[" << time.get_local_time() << "] " << ParseLevelToString(logLevel) << ": " << message << std::endl;
 	}
@@ -108,18 +111,74 @@ namespace OutLog
 		}
 	}
 
-	std::string OutputLogger::CastToType(std::any typeToCast) const
+	std::string OutputLogger::CastToType(std::any typeToCast, bool hexPrint) const
 	{
-		if (typeToCast.type() == typeid(std::string)) return std::any_cast<std::string>(typeToCast);
-		if (typeToCast.type() == typeid(int)) return std::to_string(std::any_cast<int>(typeToCast));
-		if (typeToCast.type() == typeid(unsigned int)) return  std::to_string(std::any_cast<unsigned int>(typeToCast));
-		if (typeToCast.type() == typeid(long)) return std::to_string(std::any_cast<long>(typeToCast));
-		if (typeToCast.type() == typeid(unsigned long)) return std::to_string(std::any_cast<unsigned long>(typeToCast));
-		if (typeToCast.type() == typeid(long long)) return std::to_string(std::any_cast<long long>(typeToCast));
-		if (typeToCast.type() == typeid(unsigned long long)) return std::to_string(std::any_cast<unsigned long long>(typeToCast));
-		if (typeToCast.type() == typeid(double)) return std::to_string(std::any_cast<double>(typeToCast));
-		if (typeToCast.type() == typeid(long double)) return std::to_string(std::any_cast<long double>(typeToCast));
-		if (typeToCast.type() == typeid(float)) return std::to_string(std::any_cast<float>(typeToCast));
+		if (typeToCast.type() == typeid(std::string)) 
+			return std::any_cast<std::string>(typeToCast);
+
+		if (typeToCast.type() == typeid(int))
+		{
+			int castedValue = std::any_cast<int>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(unsigned int))
+		{
+			unsigned int castedValue = std::any_cast<unsigned int>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(long))
+		{
+			long castedValue = std::any_cast<long>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(unsigned long))
+		{
+			unsigned long castedValue = std::any_cast<unsigned long>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(long long))
+		{
+			long long castedValue = std::any_cast<long long>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(unsigned long long))
+		{
+			unsigned long long castedValue = std::any_cast<unsigned long long>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(double))
+		{
+			double castedValue = std::any_cast<double>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(long double))
+		{
+			long double castedValue = std::any_cast<long double>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(float))
+		{
+			float castedValue = std::any_cast<float>(typeToCast);
+			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			return std::to_string(castedValue);
+		}
+
 		throw std::runtime_error("Unknow type to cast");
 	}
 }

@@ -31,7 +31,7 @@ namespace OutLog
 				std::string newMessage;
 
 				int currentVarIndex = 0;
-				bool onVarFormat = false, appendedArg = false;
+				bool onVarFormat = false, appendedArg = false, hexPrint = false;
 				for (int i = 0; i < oldMessage.length(); i++)
 				{
 					if (!appendedArg && oldMessage[i] == '{')
@@ -40,21 +40,31 @@ namespace OutLog
 						continue;
 					}
 					
-					if (appendedArg || !onVarFormat)
+					if (appendedArg && onVarFormat && oldMessage[i] == '}')
 					{
-						newMessage += oldMessage[i];
-						continue;
-					}
-
-					if (oldMessage[i] == '}')
-					{
-						appendedArg = true;
 						onVarFormat = false;
 						continue;
 					}
 
+					if (!onVarFormat)
+					{
+						newMessage += oldMessage[i];
+						hexPrint = false;	
+						continue;
+					}
+
+					if (oldMessage[i] == '#')
+					{
+						hexPrint = true;
+						continue;
+					}
+
+					if (appendedArg) continue;
 					currentVarIndex = oldMessage[i] - 0x30;
-					newMessage.append(CastToType(firstArg));
+					newMessage.append(CastToType(firstArg, hexPrint));
+
+					appendedArg = true;
+					hexPrint = false;
 				}
 
 				return FormatMsg(newMessage, args...);
@@ -71,7 +81,7 @@ namespace OutLog
 			std::string ParseLevelToColor(OLoggerLevel level) const;
 			std::string ParseLevelToString(OLoggerLevel level) const;
 
-			std::string CastToType(std::any typeToCast) const;
+			std::string CastToType(std::any typeToCast, bool hexPrint) const;
 
 			std::string FormatMsg(std::string message) { return message; }
 
@@ -98,3 +108,18 @@ namespace OutLog
 #define OLOG_WF(...) OLOG(OutLog::OLoggerLevel::Warning, OFORMAT(__VA_ARGS__));
 #define OLOG_EF(...) OLOG(OutLog::OLoggerLevel::Error, OFORMAT(__VA_ARGS__));
 #define OLOG_CF(...) OLOG(OutLog::OLoggerLevel::Critical, OFORMAT(__VA_ARGS__));
+
+#ifdef ODIS_V
+#define OLOG_V(x)
+#define OLOG_VF(...)
+#endif
+
+#ifdef ODIS_VLW
+#define OLOG_V(x)
+#define OLOG_L(x)
+#define OLOG_W(x)
+
+#define OLOG_VF(...)
+#define OLOG_LF(...)
+#define OLOG_WF(...)
+#endif
