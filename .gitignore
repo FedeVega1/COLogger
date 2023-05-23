@@ -1,3 +1,9 @@
+.vs/
+x64/
+COLogger/x64/
+bin/
+int/
+
 # Prerequisites
 *.d
 
@@ -24,7 +30,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe
