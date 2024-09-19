@@ -1,18 +1,11 @@
+#include "pch.h"
 #include "OutputLogger.h"
-
-#include <Windows.h>
-#include <iostream>
-#include <fstream>
-#include <io.h>
-#include <fcntl.h>
-#include <chrono>
-#include <format>
 
 namespace OutLog
 {
 	std::shared_ptr<OutputLogger> OutputLogger::logger;
 
-	OutputLogger::OutputLogger(bool useConsole, bool logToFile)
+	OutputLogger::OutputLogger(bool useConsole, bool logToFile) : pLogFileStream(nullptr), outConsoleHandle(nullptr)
 	{ 
 		usingConsole = useConsole;
 		usingFile = logToFile;
@@ -32,7 +25,7 @@ namespace OutLog
 
 	void OutputLogger::InitLog(bool useConsole, bool logToFile)
 	{
-		logger = std::shared_ptr<OutputLogger>(new OutputLogger(useConsole, logToFile));
+		logger = std::make_shared<OutputLogger>(useConsole, logToFile);
 	}
 
 	bool OutputLogger::InitConsoleLog()
@@ -116,69 +109,87 @@ namespace OutLog
 		if (typeToCast.type() == typeid(std::string)) 
 			return std::any_cast<std::string>(typeToCast);
 
+		if (typeToCast.type() == typeid(char))
+		{
+			char castedValue = std::any_cast<char>(typeToCast);
+			if (hexPrint) return ToHex(castedValue);
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(char*))
+			return std::string(std::any_cast<char*>(typeToCast));
+
 		if (typeToCast.type() == typeid(int))
 		{
 			int castedValue = std::any_cast<int>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return  ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(unsigned int))
 		{
 			unsigned int castedValue = std::any_cast<unsigned int>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(long))
 		{
 			long castedValue = std::any_cast<long>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(unsigned long))
 		{
 			unsigned long castedValue = std::any_cast<unsigned long>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(long long))
 		{
 			long long castedValue = std::any_cast<long long>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(unsigned long long))
 		{
 			unsigned long long castedValue = std::any_cast<unsigned long long>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(double))
 		{
 			double castedValue = std::any_cast<double>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(long double))
 		{
 			long double castedValue = std::any_cast<long double>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
 		if (typeToCast.type() == typeid(float))
 		{
 			float castedValue = std::any_cast<float>(typeToCast);
-			if (hexPrint) return std::vformat("{:#04x}", std::make_format_args(castedValue));
+			if (hexPrint) return ToHex(castedValue);
 			return std::to_string(castedValue);
 		}
 
-		throw std::runtime_error("Unknow type to cast");
+		throw std::runtime_error("Unknown type to cast");
+	}
+
+	template<typename T>
+	std::string OutputLogger::ToHex(T value) const { return std::vformat("{:#04x}", std::make_format_args(value)); }
+
+	void OutputLogger::ClearOutput()
+	{
+		std::cout << "\x1B[2J\x1B[H";
 	}
 }

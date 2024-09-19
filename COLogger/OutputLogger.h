@@ -23,6 +23,7 @@ namespace OutLog
 			~OutputLogger();
 
 			void LogMessage(OLoggerLevel logLevel, std::string message);
+			void ClearOutput();
 
 			template<typename T, typename ... TArgs>
 			std::string FormatMsg(std::string message, T firstArg, TArgs&&... args)
@@ -76,6 +77,11 @@ namespace OutLog
 		private:
 			static std::shared_ptr<OutputLogger> logger;
 
+			bool usingConsole, usingFile;
+			void* outConsoleHandle;
+			std::fstream* pLogFileStream;
+			std::string fileName = "output.log";
+
 			bool InitConsoleLog();
 			bool InitFileLog();
 			std::string ParseLevelToColor(OLoggerLevel level) const;
@@ -83,17 +89,16 @@ namespace OutLog
 
 			std::string CastToType(std::any typeToCast, bool hexPrint) const;
 
-			std::string FormatMsg(std::string message) { return message; }
+			template<typename T>
+			std::string ToHex(T value) const;
 
-			bool usingConsole, usingFile;
-			void* outConsoleHandle;
-			std::fstream* pLogFileStream;
-			std::string fileName = "output.log";
+			std::string FormatMsg(std::string message) { return message; }
 	};
 }
 
 #define InitLogSystem(...) OutLog::OutputLogger::InitLog(__VA_ARGS__)
 #define OLOG(...) OutLog::OutputLogger::GetLoggerInstance()->LogMessage(__VA_ARGS__)
+#define OLOG_CLEAR OutLog::OutputLogger::GetLoggerInstance()->ClearOutput();
 
 #define OLOG_V(x) OLOG(OutLog::OLoggerLevel::Verbose, x)
 #define OLOG_L(x) OLOG(OutLog::OLoggerLevel::Log, x)
