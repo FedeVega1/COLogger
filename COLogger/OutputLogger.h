@@ -98,7 +98,7 @@ namespace OutLog
 
 #define InitLogSystem(...) OutLog::OutputLogger::InitLog(__VA_ARGS__)
 #define OLOG(...) OutLog::OutputLogger::GetLoggerInstance()->LogMessage(__VA_ARGS__)
-#define OLOG_CLEAR OutLog::OutputLogger::GetLoggerInstance()->ClearOutput();
+#define OLOG_CLEAR() OutLog::OutputLogger::GetLoggerInstance()->ClearOutput();
 
 #define OLOG_V(x) OLOG(OutLog::OLoggerLevel::Verbose, x)
 #define OLOG_L(x) OLOG(OutLog::OLoggerLevel::Log, x)

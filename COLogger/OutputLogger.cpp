@@ -119,6 +119,20 @@ namespace OutLog
 		if (typeToCast.type() == typeid(char*))
 			return std::string(std::any_cast<char*>(typeToCast));
 
+		if (typeToCast.type() == typeid(byte))
+		{
+			byte castedValue = std::any_cast<byte>(typeToCast);
+			if (hexPrint) return  ToHex(castedValue);
+			return std::to_string(castedValue);
+		}
+
+		if (typeToCast.type() == typeid(short))
+		{
+			short castedValue = std::any_cast<short>(typeToCast);
+			if (hexPrint) return  ToHex(castedValue);
+			return std::to_string(castedValue);
+		}
+
 		if (typeToCast.type() == typeid(int))
 		{
 			int castedValue = std::any_cast<int>(typeToCast);
