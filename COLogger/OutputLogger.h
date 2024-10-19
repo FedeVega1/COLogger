@@ -92,7 +92,7 @@ namespace OutLog
 			template<typename T>
 			std::string ToHex(T value) const;
 
-			//std::string FormatMsg(std::string message) { return message; }
+			std::string FormatMsg(std::string message) { return message; }
 	};
 }
 
