@@ -71,7 +71,7 @@ namespace OutLog
 		return true;
 	}
 
-	void OutputLogger::LogMessage(OLoggerLevel logLevel, std::string message)
+	void OutputLogger::LogMessage(OLoggerLevel logLevel, const std::string& message)
 	{
 		// Why the fuck is this generating a memory leak?
 		const auto time = std::chrono::zoned_time{ std::chrono::current_zone(), std::chrono::system_clock::now() }; 
@@ -106,6 +106,12 @@ namespace OutLog
 
 	std::string OutputLogger::CastToType(std::any typeToCast, bool hexPrint) const
 	{
+		if (typeToCast.type() == typeid(bool))
+		{
+			bool castedValue = std::any_cast<bool>(typeToCast);
+			return std::to_string(castedValue);
+		}
+
 		if (typeToCast.type() == typeid(std::string)) 
 			return std::any_cast<std::string>(typeToCast);
 
