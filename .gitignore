@@ -30,8 +30,16 @@ int/
 *.lai
 *.la
 *.a
+*.lib
 
 # Executables
 *.exe
 *.out
 *.app
+
+# CMake
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
