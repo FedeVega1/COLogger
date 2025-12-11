@@ -34,7 +34,7 @@ set_target_properties(COLogger_shared PROPERTIES
 
 add_custom_command(TARGET COLogger_shared POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/COLogger/OutputLogger.h"
+        "${CMAKE_CURRENT_LIST_DIR}/OutputLogger.h"
         "$<TARGET_FILE_DIR:COLogger_shared>/OutputLogger.h"
 )
 
@@ -63,6 +63,6 @@ set_target_properties(COLogger_static PROPERTIES
 
 add_custom_command(TARGET COLogger_static POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/COLogger/OutputLogger.h"
+        "${CMAKE_CURRENT_LIST_DIR}/OutputLogger.h"
         "$<TARGET_FILE_DIR:COLogger_static>/OutputLogger.h"
 )
