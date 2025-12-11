@@ -32,6 +32,11 @@ set_target_properties(COLogger_shared PROPERTIES
     PDB_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
 )
 
+add_custom_command(TARGET COLogger_shared POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/COLogger/OutputLogger.h"
+        "$<TARGET_FILE_DIR:COLogger_shared>/OutputLogger.h"
+)
 
 # --- Static Library ---
 add_library(COLogger_static STATIC ${SOURCES})
@@ -54,4 +59,10 @@ set_target_properties(COLogger_static PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${STATIC_OUTPUT_DIR}"
     COMPILE_PDB_NAME "COLogger"
     COMPILE_PDB_OUTPUT_DIRECTORY "${STATIC_OUTPUT_DIR}"
+)
+
+add_custom_command(TARGET COLogger_static POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/COLogger/OutputLogger.h"
+        "$<TARGET_FILE_DIR:COLogger_static>/OutputLogger.h"
 )
