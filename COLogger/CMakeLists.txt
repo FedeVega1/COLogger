@@ -23,20 +23,22 @@ endif()
 
 set_target_properties(COLogger_shared PROPERTIES OUTPUT_NAME "COLogger")
 
-set(SHARED_OUTPUT_DIR "${OUTPUT_BASE}/$<CONFIG> - ${PLATFORM_NAME}/Shared")
-set_target_properties(COLogger_shared PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
-    LIBRARY_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
-    ARCHIVE_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
-    PDB_NAME "COLogger"
-    PDB_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
-)
+if (PROJECT_IS_TOP_LEVEL)
+    set(SHARED_OUTPUT_DIR "${OUTPUT_BASE}/$<CONFIG> - ${PLATFORM_NAME}/Shared")
+    set_target_properties(COLogger_shared PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
+        ARCHIVE_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
+        PDB_NAME "COLogger"
+        PDB_OUTPUT_DIRECTORY "${SHARED_OUTPUT_DIR}"
+    )
 
-add_custom_command(TARGET COLogger_shared POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_LIST_DIR}/OutputLogger.h"
-        "$<TARGET_FILE_DIR:COLogger_shared>/OutputLogger.h"
-)
+    add_custom_command(TARGET COLogger_shared POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_LIST_DIR}/OutputLogger.h"
+            "$<TARGET_FILE_DIR:COLogger_shared>/OutputLogger.h"
+    )
+endif()
 
 # --- Static Library ---
 add_library(COLogger_static STATIC ${SOURCES})
@@ -54,15 +56,17 @@ endif()
 
 set_target_properties(COLogger_static PROPERTIES OUTPUT_NAME "COLogger")
 
-set(STATIC_OUTPUT_DIR "${OUTPUT_BASE}/$<CONFIG> - ${PLATFORM_NAME}/Static")
-set_target_properties(COLogger_static PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${STATIC_OUTPUT_DIR}"
-    COMPILE_PDB_NAME "COLogger"
-    COMPILE_PDB_OUTPUT_DIRECTORY "${STATIC_OUTPUT_DIR}"
-)
+if (PROJECT_IS_TOP_LEVEL)
+    set(STATIC_OUTPUT_DIR "${OUTPUT_BASE}/$<CONFIG> - ${PLATFORM_NAME}/Static")
+    set_target_properties(COLogger_static PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${STATIC_OUTPUT_DIR}"
+        COMPILE_PDB_NAME "COLogger"
+        COMPILE_PDB_OUTPUT_DIRECTORY "${STATIC_OUTPUT_DIR}"
+    )
 
-add_custom_command(TARGET COLogger_static POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_CURRENT_LIST_DIR}/OutputLogger.h"
-        "$<TARGET_FILE_DIR:COLogger_static>/OutputLogger.h"
-)
+    add_custom_command(TARGET COLogger_static POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_LIST_DIR}/OutputLogger.h"
+            "$<TARGET_FILE_DIR:COLogger_static>/OutputLogger.h"
+    )
+endif()
